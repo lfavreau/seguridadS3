@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Animales</title>
+</head>
+<body>
+  <h1>Crear animal</h1>
+
+  <input id="nombre" placeholder="nombre"><br>
+  <input id="especie" placeholder="especie"><br>
+  <input id="raza" placeholder="raza"><br>
+  <input id="edad" type="number" placeholder="edad"><br>
+  <input id="ubicacion" placeholder="ubicacion"><br>
+  <input id="estadoAdopcion" placeholder="estado adopcion"><br>
+
+  <button onclick="crear()">Crear</button>
+
+  <pre id="msg"></pre>
+
+  <script>
+    async function crear() {
+      const msg = document.getElementById("msg");
+      msg.textContent = "";
+
+      const token = localStorage.getItem("token");
+      if (!token) {
+        msg.textContent = "No hay token. Primero haz login.";
+        return;
+      }
+
+      try {
+        const res = await fetch("http://localhost:8080/animals", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+          },
+          body: JSON.stringify({
+            nombre: document.getElementById("nombre").value,
+            especie: document.getElementById("especie").value,
+            raza: document.getElementById("raza").value,
+            edad: parseInt(document.getElementById("edad").value),
+            ubicacion: document.getElementById("ubicacion").value,
+            estadoAdopcion: document.getElementById("estadoAdopcion").value
+          })
+        });
+
+        const text = await res.text();
+
+        if (!res.ok) {
+          msg.textContent = "Error HTTP " + res.status + ": " + text;
+          return;
+        }
+
+        msg.textContent = "Animal creado correctamente: " + text;
+      } catch (e) {
+        msg.textContent = "Error de red o CORS: " + e;
+      }
+    }
+  </script>
+</body>
+</html>

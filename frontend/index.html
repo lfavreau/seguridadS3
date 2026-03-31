@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Animales</title>
+</head>
+<body>
+  <h1>Animales</h1>
+  <ul id="lista"></ul>
+  <pre id="msg"></pre>
+
+  <script>
+    async function cargarAnimales() {
+      const lista = document.getElementById("lista");
+      const msg = document.getElementById("msg");
+      lista.innerHTML = "";
+      msg.textContent = "";
+
+      try {
+        const res = await fetch("http://localhost:8080/animals");
+        const text = await res.text();
+
+        if (!res.ok) {
+          msg.textContent = "Error HTTP " + res.status + ": " + text;
+          return;
+        }
+
+        const data = JSON.parse(text);
+
+        if (!Array.isArray(data) || data.length === 0) {
+          msg.textContent = "No hay animales cargados.";
+          return;
+        }
+
+        data.forEach(a => {
+          const li = document.createElement("li");
+          li.textContent = `${a.nombre} - ${a.especie} - ${a.ubicacion} - ${a.estadoAdopcion}`;
+          lista.appendChild(li);
+        });
+      } catch (e) {
+        msg.textContent = "Error de red o CORS: " + e;
+      }
+    }
+
+    cargarAnimales();
+  </script>
+</body>
+</html>

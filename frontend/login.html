@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+</head>
+<body>
+  <h1>Login</h1>
+
+  <input id="user" placeholder="usuario">
+  <input id="pass" type="password" placeholder="password">
+  <button onclick="login()">Login</button>
+
+  <pre id="msg"></pre>
+
+  <script>
+    async function login() {
+      const msg = document.getElementById("msg");
+      msg.textContent = "";
+
+      try {
+        const res = await fetch("http://localhost:8080/auth/login", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({
+            username: document.getElementById("user").value,
+            password: document.getElementById("pass").value
+          })
+        });
+
+        const text = await res.text();
+
+        if (!res.ok) {
+          msg.textContent = "Error HTTP " + res.status + ": " + text;
+          return;
+        }
+
+        const data = JSON.parse(text);
+
+        if (!data.token) {
+          msg.textContent = "No vino token en la respuesta: " + text;
+          return;
+        }
+
+        localStorage.setItem("token", data.token);
+        msg.textContent = "Login OK. Token guardado.";
+      } catch (e) {
+        msg.textContent = "Error de red o CORS: " + e;
+      }
+    }
+  </script>
+</body>
+</html>
