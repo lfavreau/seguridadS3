@@ -18,7 +18,8 @@ public class Animal {
     private String especie;
     private String raza;
     private int edad;
-
+    private String genero;
     private String ubicacion;
     private String estadoAdopcion;
+    private String foto;
 }
